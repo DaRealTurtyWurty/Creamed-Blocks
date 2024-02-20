@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "creamedblocks",
+  "version": "${version}",
+  "name": "Creamed Blocks",
+  "description": "This mod allows you to apply magma cream to a block and it will prevent snow from laying on that block.",
+  "authors": [
+    "TurtyWurty"
+  ],
+  "contact": {
+    "repo": "https://github.com/TurtyWurty/Creamed Blocks",
+    "credit": "https://www.reddit.com/r/minecraftsuggestions/comments/1auyhg8/applying_magma_cream_to_blocks_prevents_snow/"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/creamedblocks/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.turtywurty.creamedblocks.client.CreamedBlocksClient"
+    ],
+    "main": [
+      "dev.turtywurty.creamedblocks.CreamedBlocks"
+    ]
+  },
+  "mixins": [
+    "creamedblocks.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
