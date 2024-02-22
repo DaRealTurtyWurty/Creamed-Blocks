@@ -11,8 +11,6 @@
     "SnowLayerBlockMixin"
   ],
   "client": [
-    "client.AbstractBlockRenderContextMixin",
-    "client.ModelBlockRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
