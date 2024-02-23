@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+// TODO: Rewrite this to use events (if possible)
 @Mixin(Level.class)
 public abstract class LevelMixin {
     @Shadow

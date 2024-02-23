@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
+// TODO: Rewrite this to use events
 @Mixin(AxeItem.class)
 public class AxeItemMixin {
     @Inject(
