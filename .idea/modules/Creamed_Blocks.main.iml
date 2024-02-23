@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main" isTestSource="false" generated="true" />
+    </content>
+  </component>
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
         <autoDetectTypes>
-          <platformType>FABRIC</platformType>
+          <platformType>FORGE</platformType>
           <platformType>MIXIN</platformType>
           <platformType>MCP</platformType>
         </autoDetectTypes>
@@ -13,6 +18,10 @@
     </facet>
   </component>
   <component name="McpModuleSettings">
-    <option name="srgType" value="SRG" />
+    <option name="mappingFile" value="E:\Creamed Blocks\build\createMcpToSrg\output.tsrg" />
+    <option name="mcpVersion" value="parchment_1.20.3-2023.12.31-1.20.4" />
+    <option name="minecraftVersion" value="1.20.4" />
+    <option name="platformVersion" value="49.0.30" />
+    <option name="srgType" value="TSRG" />
   </component>
 </module>
