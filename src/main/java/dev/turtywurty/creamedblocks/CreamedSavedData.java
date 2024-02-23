@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -77,8 +78,11 @@ public class CreamedSavedData extends SavedData {
 
         if (this.level != null) {
             List<ServerPlayer> players = this.level.players();
-            for (ServerPlayer p : players) {
-                ServerPlayNetworking.send(p, CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, PacketByteBufs.create().writeBlockPos(pos).writeBoolean(remove));
+            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create().writeBlockPos(pos).writeBoolean(remove);
+            friendlyByteBuf.writeResourceKey(this.level.dimension());
+
+            for (ServerPlayer player : players) {
+                ServerPlayNetworking.send(player, CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, friendlyByteBuf);
             }
         }
     }
@@ -89,7 +93,10 @@ public class CreamedSavedData extends SavedData {
 
     public void syncToPlayer(ServerPlayer player) {
         for (BlockPos pos : this.creamedBlocks) {
-            ServerPlayNetworking.send(player, CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, PacketByteBufs.create().writeBlockPos(pos).writeBoolean(false));
+            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create().writeBlockPos(pos).writeBoolean(false);
+            friendlyByteBuf.writeResourceKey(this.level.dimension());
+
+            ServerPlayNetworking.send(player, CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, friendlyByteBuf);
         }
     }
 }

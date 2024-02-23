@@ -5,7 +5,6 @@ import dev.turtywurty.creamedblocks.CreamedBlocks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
@@ -13,6 +12,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -23,59 +24,12 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreamedBlocksClient implements ClientModInitializer {
-    private static final List<BlockPos> CLIENT_CREAMED_BLOCKS = new ArrayList<>();
-
-    public static boolean isCreamed(BlockPos pos) {
-        return CLIENT_CREAMED_BLOCKS.contains(pos);
-    }
-
-    @Override
-    public void onInitializeClient() {
-        CreamedBlocks.LOGGER.info("Creamed Blocks Client has been initialized!");
-
-        ClientPlayNetworking.registerGlobalReceiver(CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, (client, handler, buf, responseSender) -> {
-            BlockPos pos = buf.readBlockPos();
-            boolean remove = buf.readBoolean();
-
-            if (remove) {
-                CLIENT_CREAMED_BLOCKS.remove(pos);
-            } else {
-                CLIENT_CREAMED_BLOCKS.add(pos);
-            }
-
-            client.execute(() -> {
-                if (client.level != null) {
-                    client.levelRenderer.setSectionDirty(pos.getX() >> 4, pos.getY() >> 4, pos.getZ() >> 4);
-                }
-            });
-        });
-
-        WorldRenderEvents.AFTER_ENTITIES.register((context) -> {
-            ClientLevel level = context.world();
-            if(level == null)
-                return;
-
-            PoseStack poseStack = context.matrixStack();
-            MultiBufferSource bufferSource = context.consumers();
-            float partialTicks = context.tickDelta();
-
-            Minecraft minecraft = Minecraft.getInstance();
-            Player player = minecraft.player;
-            if(player == null || player.isSpectator() || !isHoldingMagmaCream(player))
-                return;
-
-            List<BlockPos> withinRange = CLIENT_CREAMED_BLOCKS.stream()
-                    .filter(pos -> player.blockPosition().distSqr(pos) <= 64)
-                    .toList();
-
-            for(BlockPos pos : withinRange) {
-                renderMagmaCream(pos, poseStack, bufferSource, partialTicks);
-            }
-        });
-    }
+    private static final Map<ResourceKey<Level>, List<BlockPos>> CLIENT_CREAMED_BLOCKS = new HashMap<>();
 
     public static void renderMagmaCream(BlockPos blockPos, PoseStack poseStack, MultiBufferSource bufferSource, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -113,5 +67,55 @@ public class CreamedBlocksClient implements ClientModInitializer {
 
     private static boolean isHoldingMagmaCream(Player player) {
         return player.getMainHandItem().is(Items.MAGMA_CREAM) || player.getOffhandItem().is(Items.MAGMA_CREAM);
+    }
+
+    @Override
+    public void onInitializeClient() {
+        CreamedBlocks.LOGGER.info("Creamed Blocks Client has been initialized!");
+
+        ClientPlayNetworking.registerGlobalReceiver(CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, (client, handler, buf, responseSender) -> {
+            BlockPos pos = buf.readBlockPos();
+            boolean remove = buf.readBoolean();
+            ResourceKey<Level> dimension = buf.readResourceKey(Registries.DIMENSION);
+
+            List<BlockPos> list = CLIENT_CREAMED_BLOCKS.computeIfAbsent(dimension, key -> new ArrayList<>());
+            if (remove) {
+                list.remove(pos);
+            } else {
+                list.add(pos);
+            }
+
+            client.execute(() -> {
+                if (client.level != null) {
+                    client.levelRenderer.setSectionDirty(pos.getX() >> 4, pos.getY() >> 4, pos.getZ() >> 4);
+                }
+            });
+        });
+
+        WorldRenderEvents.AFTER_ENTITIES.register((context) -> {
+            ClientLevel level = context.world();
+            if (level == null)
+                return;
+
+            PoseStack poseStack = context.matrixStack();
+            MultiBufferSource bufferSource = context.consumers();
+            float partialTicks = context.tickDelta();
+
+            Minecraft minecraft = Minecraft.getInstance();
+            Player player = minecraft.player;
+            if (player == null || player.isSpectator() || !isHoldingMagmaCream(player))
+                return;
+
+            ResourceKey<Level> dimension = level.dimension();
+
+            List<BlockPos> withinRange = CLIENT_CREAMED_BLOCKS.getOrDefault(dimension, new ArrayList<>())
+                    .stream()
+                    .filter(pos -> player.blockPosition().distSqr(pos) <= 64)
+                    .toList();
+
+            for (BlockPos pos : withinRange) {
+                renderMagmaCream(pos, poseStack, bufferSource, partialTicks);
+            }
+        });
     }
 }
