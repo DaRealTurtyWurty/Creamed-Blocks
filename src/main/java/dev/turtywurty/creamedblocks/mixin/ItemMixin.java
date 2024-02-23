@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -29,7 +30,7 @@ public class ItemMixin {
         Item item = (Item) (Object) this;
         Player player = context.getPlayer();
 
-        if (player == null || item != Items.MAGMA_CREAM || context.getLevel().isClientSide() || player.isShiftKeyDown())
+        if (context.getHand() != InteractionHand.MAIN_HAND || player == null || item != Items.MAGMA_CREAM || context.getLevel().isClientSide() || player.isShiftKeyDown())
             return;
 
         BlockPos pos = context.getClickedPos();

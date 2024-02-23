@@ -21,7 +21,7 @@ public class SnowLayerBlockMixin {
     )
     private void creamedblocks$randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo callback) {
         var data = CreamedSavedData.get(serverLevel);
-        if (data.isCreamed(blockPos.below())) {
+        if (data.isCreamed(blockPos) || data.isCreamed(blockPos.below())) {
             Block.dropResources(blockState, serverLevel, blockPos);
             serverLevel.removeBlock(blockPos, false);
             callback.cancel();

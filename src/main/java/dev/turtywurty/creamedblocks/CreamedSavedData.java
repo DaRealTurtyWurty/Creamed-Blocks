@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreamedSavedData extends SavedData {
-    public static final SavedData.Factory<CreamedSavedData> FACTORY = new Factory<>(CreamedSavedData::new, CreamedSavedData::load, DataFixTypes.LEVEL);
+    public static final SavedData.Factory<CreamedSavedData> FACTORY =
+            new Factory<>(CreamedSavedData::new, CreamedSavedData::load, DataFixTypes.LEVEL);
 
     private static final String KEY = CreamedBlocks.MODID + FileSystems.getDefault().getSeparator() + "creamed_blocks";
 

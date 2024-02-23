@@ -3,6 +3,7 @@ package dev.turtywurty.creamedblocks.mixin;
 import dev.turtywurty.creamedblocks.CreamedSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.level.Level;
@@ -23,7 +24,8 @@ public class AxeItemMixin {
             cancellable = true
     )
     private void creamedblocks$evaluateNewBlockState(Level level, BlockPos pos, @Nullable Player player, BlockState state, CallbackInfoReturnable<Optional<BlockState>> callback) {
-        if (player == null || level.isClientSide() || player.isShiftKeyDown())
+        AxeItem item = (AxeItem) (Object) this;
+        if (player == null || !player.getItemInHand(InteractionHand.MAIN_HAND).is(item) || level.isClientSide() || player.isShiftKeyDown())
             return;
 
         var serverLevel = (ServerLevel) level;

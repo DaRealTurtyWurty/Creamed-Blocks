@@ -39,10 +39,10 @@ public class CreamedBlocksClient implements ClientModInitializer {
 
         BlockPos abovePos = blockPos.above();
 
-        Level level = minecraft.level;
+        ClientLevel level = minecraft.level;
         Vec3 above = abovePos.getCenter();
         double x = above.x - Mth.lerp(partialTicks, cameraEntity.xOld, cameraEntity.getX());
-        double y = above.y - 2 - Mth.lerp(partialTicks, cameraEntity.yOld, cameraEntity.getY());
+        double y = above.y - 1.5 - Mth.lerp(partialTicks, cameraEntity.yOld, cameraEntity.getY());
         double z = above.z - Mth.lerp(partialTicks, cameraEntity.zOld, cameraEntity.getZ());
 
         ItemRenderer itemRenderer = minecraft.getItemRenderer();
