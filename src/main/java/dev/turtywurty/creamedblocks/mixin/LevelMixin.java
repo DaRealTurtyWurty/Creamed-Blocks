@@ -30,7 +30,7 @@ public abstract class LevelMixin {
             return;
 
         var serverLevel = (ServerLevel) level;
-        var savedData = CreamedSavedData.getCached(serverLevel);
+        var savedData = CreamedSavedData.get(serverLevel);
         if (savedData.isCreamed(pos)) {
             savedData.removeCreamed(pos);
         }

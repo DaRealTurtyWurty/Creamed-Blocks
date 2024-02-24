@@ -6,6 +6,7 @@ import dev.turtywurty.creamedblocks.data.CreamedSavedData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,11 +31,28 @@ public class CommonEvents {
     }
 
     @SubscribeEvent
-    public static void entityJoinLevel(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide() && event.loadedFromDisk() && event.getEntity() instanceof Player player){
-            var level = (ServerLevel) event.getLevel();
-            CreamedSavedData.getCached(level).syncToPlayer((ServerPlayer) player);
+    public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide())
+            return;
+
+        MinecraftServer server = player.getServer();
+        if (server == null)
+            return;
+
+        for (ServerLevel serverLevel : server.getAllLevels()) {
+            CreamedSavedData.get(serverLevel).syncToPlayer((ServerPlayer) player);
         }
+    }
+
+    @SubscribeEvent
+    public static void playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        Player player = event.getEntity();
+        Level level = player.level();
+        if (!level.isClientSide())
+            return;
+
+        ClientEvents.CLIENT_CREAMED_BLOCKS.clear();
     }
 
     @SubscribeEvent
@@ -46,7 +65,7 @@ public class CommonEvents {
         BlockPos pos = event.getPos();
         var serverLevel = (ServerLevel) event.getLevel();
 
-        var data = CreamedSavedData.getCached(serverLevel);
+        var data = CreamedSavedData.get(serverLevel);
         ItemStack stack = event.getItemStack();
         if (!data.isCreamed(pos)) {
             data.setCreamed(pos);

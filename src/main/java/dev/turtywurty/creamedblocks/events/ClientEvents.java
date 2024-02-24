@@ -32,6 +32,7 @@ import java.util.Map;
 public class ClientEvents {
     public static final Map<ResourceKey<Level>, List<BlockPos>> CLIENT_CREAMED_BLOCKS = new HashMap<>();
 
+    // TODO: Make this work in 3rd person (need to find a replacement for xOld, yOld, and zOld), the rest can be replaced with Camera
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
         if(event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES)
