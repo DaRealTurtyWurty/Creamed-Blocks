@@ -26,6 +26,6 @@ public class CreamedBlockClearPacket {
         if(context.isServerSide())
             return;
 
-        ClientEvents.CLIENT_CREAMED_BLOCKS.clear();
+        ClientEvents.CLIENT_CREAMED_BLOCKS.remove(this.dimension);
     }
 }
