@@ -92,6 +92,11 @@ public class CreamedBlocksClient implements ClientModInitializer {
             });
         });
 
+        ClientPlayNetworking.registerGlobalReceiver(CreamedBlocks.CREAMED_BLOCKS_CLEAR_PACKET_ID, (client, handler, buf, responseSender) -> {
+            ResourceKey<Level> dimension = buf.readResourceKey(Registries.DIMENSION);
+            CLIENT_CREAMED_BLOCKS.remove(dimension);
+        });
+
         WorldRenderEvents.AFTER_ENTITIES.register((context) -> {
             ClientLevel level = context.world();
             if (level == null)

@@ -1,6 +1,6 @@
 package dev.turtywurty.creamedblocks.mixin;
 
-import dev.turtywurty.creamedblocks.CreamedSavedData;
+import dev.turtywurty.creamedblocks.data.CreamedSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -30,7 +30,7 @@ public class AxeItemMixin {
 
         var serverLevel = (ServerLevel) level;
 
-        var data = CreamedSavedData.get(serverLevel);
+        var data = CreamedSavedData.getCached(serverLevel);
         if (data.isCreamed(pos)) {
             data.removeCreamed(pos);
             callback.setReturnValue(Optional.of(state));

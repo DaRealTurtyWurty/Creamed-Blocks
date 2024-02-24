@@ -1,5 +1,8 @@
-package dev.turtywurty.creamedblocks;
+package dev.turtywurty.creamedblocks.data;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import dev.turtywurty.creamedblocks.CreamedBlocks;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -17,10 +20,15 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class CreamedSavedData extends SavedData {
     public static final SavedData.Factory<CreamedSavedData> FACTORY =
             new Factory<>(CreamedSavedData::new, CreamedSavedData::load, DataFixTypes.LEVEL);
+
+    private static final Cache<ServerLevel, CreamedSavedData> RECENT_CACHE = CacheBuilder.newBuilder()
+            .maximumSize(5)
+            .build();
 
     private static final String KEY = CreamedBlocks.MODID + FileSystems.getDefault().getSeparator() + "creamed_blocks";
 
@@ -47,10 +55,18 @@ public class CreamedSavedData extends SavedData {
         return new CreamedSavedData(temp);
     }
 
-    public static CreamedSavedData get(ServerLevel level) {
+    private static CreamedSavedData get(ServerLevel level) {
         var instance = level.getDataStorage().computeIfAbsent(FACTORY, KEY);
         instance.level = level;
         return instance;
+    }
+
+    public static CreamedSavedData getCached(ServerLevel level) {
+        try {
+            return RECENT_CACHE.get(level, () -> get(level));
+        } catch (ExecutionException exception) {
+            throw new RuntimeException("Failed to get saved data for level " + level, exception);
+        }
     }
 
     @Override
@@ -98,6 +114,36 @@ public class CreamedSavedData extends SavedData {
             friendlyByteBuf.writeResourceKey(this.level.dimension());
 
             ServerPlayNetworking.send(player, CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, friendlyByteBuf);
+        }
+    }
+
+    public void reload() {
+        List<ServerPlayer> players = this.level.players();
+        sendClearPacket(players);
+
+        for (BlockPos pos : this.creamedBlocks) {
+            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create().writeBlockPos(pos).writeBoolean(false);
+            friendlyByteBuf.writeResourceKey(this.level.dimension());
+
+            for (ServerPlayer player : players) {
+                ServerPlayNetworking.send(player, CreamedBlocks.CREAMED_BLOCKS_PACKET_ID, friendlyByteBuf);
+            }
+        }
+    }
+
+    public void reset() {
+        this.creamedBlocks.clear();
+        setDirty();
+
+        List<ServerPlayer> players = this.level.players();
+        sendClearPacket(players);
+    }
+
+    private void sendClearPacket(List<ServerPlayer> players) {
+        for (ServerPlayer player : players) {
+            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+            friendlyByteBuf.writeResourceKey(this.level.dimension());
+            ServerPlayNetworking.send(player, CreamedBlocks.CREAMED_BLOCKS_CLEAR_PACKET_ID, friendlyByteBuf);
         }
     }
 }

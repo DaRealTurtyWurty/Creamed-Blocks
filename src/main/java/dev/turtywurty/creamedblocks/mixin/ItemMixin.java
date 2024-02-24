@@ -1,6 +1,6 @@
 package dev.turtywurty.creamedblocks.mixin;
 
-import dev.turtywurty.creamedblocks.CreamedSavedData;
+import dev.turtywurty.creamedblocks.data.CreamedSavedData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -36,7 +36,7 @@ public class ItemMixin {
         BlockPos pos = context.getClickedPos();
         var level = (ServerLevel) context.getLevel();
 
-        var data = CreamedSavedData.get(level);
+        var data = CreamedSavedData.getCached(level);
         ItemStack stack = context.getItemInHand();
         if (!data.isCreamed(pos)) {
             data.setCreamed(pos);
