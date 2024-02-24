@@ -36,7 +36,7 @@ public class ItemMixin {
         BlockPos pos = context.getClickedPos();
         var level = (ServerLevel) context.getLevel();
 
-        var data = CreamedSavedData.getCached(level);
+        var data = CreamedSavedData.get(level);
         ItemStack stack = context.getItemInHand();
         if (!data.isCreamed(pos)) {
             data.setCreamed(pos);

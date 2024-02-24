@@ -3,9 +3,11 @@ package dev.turtywurty.creamedblocks;
 import dev.turtywurty.creamedblocks.commands.CreamedBlocksCommand;
 import dev.turtywurty.creamedblocks.data.CreamedSavedData;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +22,10 @@ public class CreamedBlocks implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Creamed Blocks has been initialized!");
 
-        ServerEntityEvents.ENTITY_LOAD.register((entity, serverLevel) -> {
-            if(entity instanceof ServerPlayer player) {
-                CreamedSavedData.getCached(serverLevel).syncToPlayer(player);
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayer player = handler.getPlayer();
+            for (ServerLevel serverLevel : server.getAllLevels()) {
+                CreamedSavedData.get(serverLevel).syncToPlayer(player);
             }
         });
 

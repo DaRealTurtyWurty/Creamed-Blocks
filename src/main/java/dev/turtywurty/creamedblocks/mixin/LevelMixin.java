@@ -8,7 +8,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -30,7 +29,7 @@ public abstract class LevelMixin {
             return;
 
         var serverLevel = (ServerLevel) level;
-        var savedData = CreamedSavedData.getCached(serverLevel);
+        var savedData = CreamedSavedData.get(serverLevel);
         if (savedData.isCreamed(pos)) {
             savedData.removeCreamed(pos);
         }

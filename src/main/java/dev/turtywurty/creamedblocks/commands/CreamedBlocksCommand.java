@@ -23,7 +23,7 @@ public class CreamedBlocksCommand {
                         .executes(context -> {
                             context.getSource().sendSuccess(() -> RELOADING, true);
 
-                            var data = CreamedSavedData.getCached(context.getSource().getLevel());
+                            var data = CreamedSavedData.get(context.getSource().getLevel());
                             data.reload();
 
                             context.getSource().sendSuccess(() -> RELOAD_FINISHED, true);
@@ -33,7 +33,7 @@ public class CreamedBlocksCommand {
                 .then(Commands.literal("query")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(context -> {
-                                    var data = CreamedSavedData.getCached(context.getSource().getLevel());
+                                    var data = CreamedSavedData.get(context.getSource().getLevel());
                                     var pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
 
                                     if (data.isCreamed(pos)) {
@@ -48,7 +48,7 @@ public class CreamedBlocksCommand {
                         .then(Commands.literal("true")
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                         .executes(context -> {
-                                            var data = CreamedSavedData.getCached(context.getSource().getLevel());
+                                            var data = CreamedSavedData.get(context.getSource().getLevel());
                                             var pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
                                             data.setCreamed(pos);
 
@@ -60,7 +60,7 @@ public class CreamedBlocksCommand {
                         .then(Commands.literal("false")
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                         .executes(context -> {
-                                            var data = CreamedSavedData.getCached(context.getSource().getLevel());
+                                            var data = CreamedSavedData.get(context.getSource().getLevel());
                                             var pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
                                             data.removeCreamed(pos);
 
@@ -71,7 +71,7 @@ public class CreamedBlocksCommand {
                                         }))))
                 .then(Commands.literal("reset")
                         .executes(context -> {
-                            var data = CreamedSavedData.getCached(context.getSource().getLevel());
+                            var data = CreamedSavedData.get(context.getSource().getLevel());
                             data.reset();
 
                             context.getSource().sendSuccess(() -> RESET, true);

@@ -3,6 +3,7 @@ package dev.turtywurty.creamedblocks.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.turtywurty.creamedblocks.CreamedBlocks;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
@@ -31,6 +32,7 @@ import java.util.Map;
 public class CreamedBlocksClient implements ClientModInitializer {
     private static final Map<ResourceKey<Level>, List<BlockPos>> CLIENT_CREAMED_BLOCKS = new HashMap<>();
 
+    // TODO: Make this work in 3rd person (need to find a replacement for xOld, yOld, and zOld), the rest can be replaced with Camera
     public static void renderMagmaCream(BlockPos blockPos, PoseStack poseStack, MultiBufferSource bufferSource, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         Entity cameraEntity = minecraft.getCameraEntity();
@@ -95,6 +97,10 @@ public class CreamedBlocksClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(CreamedBlocks.CREAMED_BLOCKS_CLEAR_PACKET_ID, (client, handler, buf, responseSender) -> {
             ResourceKey<Level> dimension = buf.readResourceKey(Registries.DIMENSION);
             CLIENT_CREAMED_BLOCKS.remove(dimension);
+        });
+
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            CLIENT_CREAMED_BLOCKS.clear();
         });
 
         WorldRenderEvents.AFTER_ENTITIES.register((context) -> {
