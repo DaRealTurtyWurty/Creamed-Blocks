@@ -1,5 +1,8 @@
-package dev.turtywurty.creamedblocks;
+package dev.turtywurty.creamedblocks.events;
 
+import dev.turtywurty.creamedblocks.CreamedBlocks;
+import dev.turtywurty.creamedblocks.commands.CreamedBlocksCommand;
+import dev.turtywurty.creamedblocks.data.CreamedSavedData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -12,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,6 +23,11 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = CreamedBlocks.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEvents {
+    @SubscribeEvent
+    public static void registerCommands(RegisterCommandsEvent event) {
+        CreamedBlocksCommand.register(event.getDispatcher());
+    }
+
     @SubscribeEvent
     public static void entityJoinLevel(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide() && event.loadedFromDisk() && event.getEntity() instanceof Player player){

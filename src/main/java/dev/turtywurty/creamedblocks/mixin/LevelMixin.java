@@ -1,7 +1,7 @@
 package dev.turtywurty.creamedblocks.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.turtywurty.creamedblocks.CreamedSavedData;
+import dev.turtywurty.creamedblocks.data.CreamedSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;

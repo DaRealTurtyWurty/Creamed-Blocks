@@ -1,6 +1,6 @@
 package dev.turtywurty.creamedblocks.network;
 
-import dev.turtywurty.creamedblocks.ClientEvents;
+import dev.turtywurty.creamedblocks.events.ClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;

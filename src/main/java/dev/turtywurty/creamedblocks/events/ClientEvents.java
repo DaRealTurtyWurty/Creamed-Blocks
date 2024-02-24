@@ -1,6 +1,7 @@
-package dev.turtywurty.creamedblocks;
+package dev.turtywurty.creamedblocks.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.turtywurty.creamedblocks.CreamedBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;

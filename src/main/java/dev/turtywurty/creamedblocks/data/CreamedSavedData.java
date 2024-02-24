@@ -1,7 +1,9 @@
-package dev.turtywurty.creamedblocks;
+package dev.turtywurty.creamedblocks.data;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import dev.turtywurty.creamedblocks.CreamedBlocks;
+import dev.turtywurty.creamedblocks.network.CreamedBlockClearPacket;
 import dev.turtywurty.creamedblocks.network.CreamedBlockPacket;
 import dev.turtywurty.creamedblocks.network.PacketManager;
 import net.minecraft.core.BlockPos;
@@ -104,5 +106,20 @@ public class CreamedSavedData extends SavedData {
         } catch (ExecutionException exception) {
             throw new RuntimeException("Failed to get saved data for level " + level, exception);
         }
+    }
+
+    public void reload() {
+        PacketManager.sendToAllClients(new CreamedBlockClearPacket(this.level.dimension()));
+
+        for (BlockPos pos : this.creamedBlocks) {
+            PacketManager.sendToAllClients(new CreamedBlockPacket(pos, false, this.level.dimension()));
+        }
+    }
+
+    public void reset() {
+        this.creamedBlocks.clear();
+        setDirty();
+
+        PacketManager.sendToAllClients(new CreamedBlockClearPacket(this.level.dimension()));
     }
 }

@@ -21,6 +21,12 @@ public class PacketManager {
                 .encoder(CreamedBlockPacket::encode)
                 .consumerMainThread(CreamedBlockPacket::handle)
                 .add();
+
+        CHANNEL.messageBuilder(CreamedBlockClearPacket.class)
+                .decoder(CreamedBlockClearPacket::new)
+                .encoder(CreamedBlockClearPacket::encode)
+                .consumerMainThread(CreamedBlockClearPacket::handle)
+                .add();
     }
 
     public static void sendToClient(Object msg, ServerPlayer player) {
