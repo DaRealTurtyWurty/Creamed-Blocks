@@ -1,35 +1,36 @@
 package dev.turtywurty.creamedblocks.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.turtywurty.creamedblocks.CreamedSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-// TODO: Rewrite this to use events (if possible)
 @Mixin(Level.class)
 public abstract class LevelMixin {
-    @Shadow
-    public abstract BlockState getBlockState(BlockPos blockPos);
-
     @Inject(
             method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/chunk/LevelChunk;setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"
+                    target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;",
+                    ordinal = 1
             )
     )
-    private void creamedblocks$setBlock(BlockPos pos, BlockState state, int flags, int unknown, CallbackInfoReturnable<Boolean> callback) {
+    private void creamedblocks$setBlock(BlockPos pos, BlockState state, int flags, int unknown,
+                                        CallbackInfoReturnable<Boolean> callback,
+                                        @Local(ordinal = 1) BlockState old, @Local Block block) {
         var level = (Level) (Object) this;
-        if (!(level instanceof ServerLevel serverLevel) || getBlockState(pos) == state)
+        if (level.isClientSide() || old.is(block))
             return;
 
-        var savedData = CreamedSavedData.get(serverLevel);
+        var serverLevel = (ServerLevel) level;
+        var savedData = CreamedSavedData.getCached(serverLevel);
         if (savedData.isCreamed(pos)) {
             savedData.removeCreamed(pos);
         }

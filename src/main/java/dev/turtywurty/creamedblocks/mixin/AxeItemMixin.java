@@ -30,8 +30,7 @@ public class AxeItemMixin {
             return;
 
         var serverLevel = (ServerLevel) level;
-
-        var data = CreamedSavedData.get(serverLevel);
+        var data = CreamedSavedData.getCached(serverLevel);
         if (data.isCreamed(pos)) {
             data.removeCreamed(pos);
             callback.setReturnValue(Optional.of(state));

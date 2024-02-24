@@ -6,7 +6,6 @@
   "refmap": "mixins.creamedblocks.refmap.json",
   "mixins": [
     "AxeItemMixin",
-    "ItemMixin",
     "LevelMixin",
     "NbtIoMixin",
     "SnowLayerBlockMixin"
